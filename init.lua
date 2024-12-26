@@ -94,6 +94,9 @@ vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { noremap = true, silent = true })
 -- spell check
 vim.keymap.set('n', '<leader>ll', ':setlocal spell spelllang-en_us<CR>')
 
+-- Disables "undefined global" warning
+vim.opt.shortmess:append 'I'
+
 -- [[ Basic Autocommands ]]
 
 -- Highlight when yanking (copying) text
@@ -128,6 +131,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'xiyaowong/transparent.nvim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -162,6 +166,24 @@ require('lazy').setup({
     config = true,
     -- use opts = {} for passing setup options
     -- this is equivalent to setup({}) function
+  },
+  -- Preview Markdown docs
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app; yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+      vim.g.mkdp_browser = '/Applications/Brave Browser.app'
+    end,
+    ft = { 'markdown' },
+    config = function()
+      vim.keymap.set('n', '<leader>mdn', ':MarkdownPreview<CR>')
+      vim.keymap.set('n', '<leader>mds', ':MarkdownPreviewStop<CR>')
+
+      vim.g.mkdp_markdown_css = 'C:/users/micha/appdata/local/nvim/md.css'
+      vim.g.mkdp_highlight_css = 'C:/users/micha/appdata/local/nvim/mdhl.css'
+    end,
   },
   {
     {
@@ -766,7 +788,9 @@ require('lazy').setup({
 
       dashboard.section.buttons.val = {
         dashboard.button('e', '  > New file', ':ene <BAR> startinsert <CR>'),
-        dashboard.button('b', '  > Browse files', ':Oil --float<CR>'),
+        dashboard.button('n', '  > Browse files', ':Oil --float<CR>'),
+        dashboard.button('f', '󰈞  > Find file', ':Telescope find_files<CR>'),
+        dashboard.button('r', '  > Recent', ':Telescope oldfiles<CR>'),
         -- dashboard.button("s", "  > Settings", ":e $MYVIMRC | :cd %:p:h | split . | wincmd k | pwd<CR>"),
         -- dashboard.button("q", "  > Quit NVIM", ":qa<CR>"),
       }
@@ -894,8 +918,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+      -- vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      vim.keymap.set('n', '<leader>sr', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
